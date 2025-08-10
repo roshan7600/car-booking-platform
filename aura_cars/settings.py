@@ -5,13 +5,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'replace-this-with-a-secret-key')
 
-# Set DEBUG=True for local dev, False for production
+# Set DEBUG=True for local development, False for production
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
-    'Roshan760.pythonanywhere.com',  # Your PythonAnywhere username here
     'localhost',
     '127.0.0.1',
+    # Add your domain here for production
 ]
 
 INSTALLED_APPS = [
@@ -26,10 +26,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',  # Required for sessions
+    'django.contrib.sessions.middleware.SessionMiddleware',  
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',             # Protect against CSRF
-    'django.contrib.auth.middleware.AuthenticationMiddleware',  # Handles authentication
+    'django.middleware.csrf.CsrfViewMiddleware',             
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -55,21 +55,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'aura_cars.wsgi.application'
 
-# Database: use different path for local dev and production
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+# Database configuration
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join('/home/Roshan760', 'db.sqlite3'),  # Use your PythonAnywhere home directory
-        }
-    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -85,7 +77,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -96,7 +88,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Optional: security settings for production
+# Optional security settings for production
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
