@@ -9,7 +9,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'replace-this-with-a-secret-key
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
-    'roshan760.pythonanywhere.com',  # Your PythonAnywhere username here
+    'Roshan760.pythonanywhere.com',  # Your PythonAnywhere username here
     'localhost',
     '127.0.0.1',
 ]
@@ -67,7 +67,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join('/home/roshan760', 'db.sqlite3'),  # Use your PythonAnywhere home directory
+            'NAME': os.path.join('/home/Roshan760', 'db.sqlite3'),  # Use your PythonAnywhere home directory
         }
     }
 
