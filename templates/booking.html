@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ car.year }} {{ car.make }} {{ car.model }} - Aura Luxury Cars{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="booking-section">
+                <h1 class="text-center mb-5">Book Your Luxury Experience</h1>
+                
+                <!-- Car Information -->
+                <div class="card mb-4">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ car.main_image_url }}" class="img-fluid rounded-start h-100" alt="{{ car.make }} {{ car.model }}" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ car.year }} {{ car.make }} {{ car.model }}</h5>
+                                <div class="price-tag" id="price_per_day">{{ car.price_per_day }}</div>
+                                <div class="car-specs">
+                                    <span class="badge bg-light text-dark me-2"><i class="fas fa-cogs me-1"></i> {{ car.transmission }}</span>
+                                    <span class="badge bg-light text-dark me-2"><i class="fas fa-tachometer-alt me-1"></i> {{ car.horsepower }} HP</span>
+                                    <span class="badge bg-light text-dark"><i class="fas fa-users me-1"></i> {{ car.seats }} seats</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Booking Form -->
+                <div class="booking-form">
+                    <h3 class="mb-4">Select Your Dates</h3>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.start_date.id_for_label }}" class="form-label">Pick-up Date</label>
+                                <input type="date" name="{{ form.start_date.name }}" id="{{ form.start_date.id_for_label }}" class="form-control {% if form.start_date.errors %}is-invalid{% endif %}" required>
+                                {% if form.start_date.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.start_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.end_date.id_for_label }}" class="form-label">Drop-off Date</label>
+                                <input type="date" name="{{ form.end_date.name }}" id="{{ form.end_date.id_for_label }}" class="form-control {% if form.end_date.errors %}is-invalid{% endif %}" required>
+                                {% if form.end_date.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.end_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Booking Summary (initially hidden) -->
+                        <div id="booking_summary" class="card mt-4 mb-4 d-none">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Booking Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Vehicle:</div>
+                                    <div class="col-6 text-end">{{ car.year }} {{ car.make }} {{ car.model }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Daily Rate:</div>
+                                    <div class="col-6 text-end">${{ car.price_per_day }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Number of Days:</div>
+                                    <div class="col-6 text-end" id="num_days">--</div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-6"><strong>Total Price:</strong></div>
+                                    <div class="col-6 text-end"><strong>$<span id="total_price">--</span></strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Complete Booking</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Additional Info -->
+                <div class="booking-info mt-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Important Information</h5>
+                            <ul class="mb-0">
+                                <li>A valid driver's license is required at pickup</li>
+                                <li>Minimum age requirement: 25 years</li>
+                                <li>Security deposit required at pickup</li>
+                                <li>Insurance included in the rental price</li>
+                                <li>Free cancellation up to 48 hours before pickup</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate number of days and total price when dates change
+        const startDateEl = document.getElementById('id_start_date');
+        const endDateEl = document.getElementById('id_end_date');
+        const numDaysEl = document.getElementById('num_days');
+        const totalPriceEl = document.getElementById('total_price');
+        const pricePerDay = parseFloat('{{ car.price_per_day }}');
+        
+        function calculatePrice() {
+            if (startDateEl.value && endDateEl.value) {
+                const startDate = new Date(startDateEl.value);
+                const endDate = new Date(endDateEl.value);
+                
+                // Check if dates are valid
+                if (!isNaN(startDate) && !isNaN(endDate) && endDate >= startDate) {
+                    // Calculate difference in days
+                    const diffTime = Math.abs(endDate - startDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    // Update the UI
+                    numDaysEl.textContent = diffDays;
+                    totalPriceEl.textContent = (diffDays * pricePerDay).toFixed(2);
+                    
+                    // Show the booking summary
+                    document.getElementById('booking_summary').classList.remove('d-none');
+                }
+            }
+        }
+        
+        // Add event listeners
+        startDateEl.addEventListener('change', calculatePrice);
+        endDateEl.addEventListener('change', calculatePrice);
+    });
+</script>
+{% endblock %}

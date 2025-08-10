@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LuxoDrive - Luxury Car Rental{% endblock %}</title>
+    
+    {% load static %}
+<link rel="icon" type="image/png" href="{% static 'images/image-removebg-preview.png' %}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">LuxoDrive</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'car_list' %}">Our Fleet</a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                            <!-- Admin Navigation -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/" style="color: #ffcc00; font-weight: bold;">Admin Panel</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_booking_management' %}" style="color: #ffcc00; font-weight: bold;">
+                                    <i class="fas fa-clipboard-check me-1"></i> Booking Approval
+                                    {% if pending_count > 0 %}
+                                    <span class="badge bg-danger">{{ pending_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Admin Controls
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                    <li><a class="dropdown-item" href="{% url 'admin_booking_management' %}?status=pending">
+                                        <i class="fas fa-hourglass-half me-2"></i> Pending Bookings
+                                        {% if pending_count > 0 %}
+                                        <span class="badge bg-warning text-dark ms-1">{{ pending_count }}</span>
+                                        {% endif %}
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'admin_booking_management' %}?status=confirmed">
+                                        <i class="fas fa-check-circle me-2"></i> Confirmed Bookings
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/admin/rental/car/">
+                                        <i class="fas fa-car me-2"></i> Manage Cars
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="/admin/auth/user/">
+                                        <i class="fas fa-users me-2"></i> Manage Users
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/admin/">
+                                        <i class="fas fa-tachometer-alt me-2"></i> Full Admin Dashboard
+                                    </a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <!-- Regular User Navigation -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'profile' %}">My Profile</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-link">Logout</button>
+                            </form>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link username-display">
+                                <i class="fas fa-user me-1"></i>
+                                {% if user.is_superuser %}
+                                    <span class="admin-badge">Admin:</span>
+                                {% endif %}
+                                {{ user.username }}
+                            </span>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3 class="footer-title">LuxoDrive</h3>
+                    <p>Experience unparalleled elegance with our exclusive fleet of premium luxury vehicles — where every journey combines sophistication, comfort, and style.</p>
+                   
+                </div>
+                <div class="col-md-4">
+                    <h3 class="footer-title">QUICK LINKS</h3>
+                    <div class="footer-links">
+                        <a href="{% url 'home' %}">Home</a>
+                        <a href="{% url 'car_list' %}">Our Fleet</a>
+                        <a href="#">About Us</a>
+                        <a href="#">Terms & Conditions</a>
+                        
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h3 class="footer-title">CONTACT ADMIN</h3>
+                    <div class="footer-links">
+    <p><i class="fas fa-map-marker-alt me-2"></i> Main Road, Sundargarh, Odisha – 770001, India</p>
+    
+    <p>
+        <i class="fas fa-phone-alt me-2"></i>
+        <a href="tel:+917325902485" style="text-decoration: none; color: inherit;">
+            +91 7325902485
+        </a>
+    </p>
+    
+    <p>
+        <i class="fas fa-envelope me-2"></i>
+        <a href="mailto:roshanpatel31296@gmail.com" style="text-decoration: none; color: inherit;">
+            roshanpatel31296@gmail.com
+        </a>
+    </p>
+</div>
+
+                <div class="social-icons" style="margin-top: 20px;">
+    <a href="https://www.linkedin.com/in/roshan-patel-9bb055268/" target="_blank"
+       style="color: #c89f45; text-decoration: none; font-weight: bold; font-size: 1rem; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fab fa-linkedin-in" style="font-size: 1.2rem;"></i> Connect on LinkedIn
+    </a>
+</div>
+
+
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025  LuxoDrive Luxury Car Rentals. All Rights Reserved By Mr.Roshan patel</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/static/js/main.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

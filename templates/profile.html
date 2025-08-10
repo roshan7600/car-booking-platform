@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - LuxoDrive Luxury Cars{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="profile-section">
+        <div class="row">
+            <div class="col-lg-4">
+                <!-- User Profile Card -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="card-title mb-0">My Profile</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <div class="avatar-placeholder mb-3">
+                                <i class="fas fa-user fa-4x"></i>
+                            </div>
+                            <h4>{{ user.get_full_name }}</h4>
+                            <p class="text-muted">{{ user.email }}</p>
+                            <p class="text-muted">Member since {{ user.date_joined|date:"F d, Y" }}</p>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat">
+                                        <h5>{{ bookings.count }}</h5>
+                                        <p class="text-muted">Bookings</p>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat">
+                                        <h5>{{ bookings.count }}</h5>
+                                        <p class="text-muted">Cars Rented</p>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat">
+                                        <h5>
+                                            {{ active_bookings }}
+                                        </h5>
+                                        <p class="text-muted">Active</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Quick Links</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <a href="{% url 'car_list' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-car me-2"></i> Browse Cars
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="fas fa-user-edit me-2"></i> Edit Profile
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="fas fa-lock me-2"></i> Change Password
+                            </a>
+                            <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <!-- Booking History -->
+                <div class="card booking-history">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="card-title mb-0">My Bookings</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if bookings %}
+                            <ul class="nav nav-tabs mb-4" id="bookingTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="true">All</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="false">Active</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">Completed</button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content" id="bookingTabsContent">
+                                <!-- All Bookings Tab -->
+                                <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                                    {% for booking in bookings %}
+                                        <div class="card booking-card mb-3">
+                                            <div class="row g-0">
+                                                <div class="col-md-4">
+                                                    <img src="{{ booking.car.main_image_url }}" class="img-fluid rounded-start h-100" alt="{{ booking.car.make }} {{ booking.car.model }}" style="object-fit: cover;">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ booking.car.year }} {{ booking.car.make }} {{ booking.car.model }}</h5>
+                                                        <div class="booking-dates mb-2">
+                                                            <i class="fas fa-calendar-alt me-2"></i> {{ booking.start_date|date:"M d, Y" }} - {{ booking.end_date|date:"M d, Y" }}
+                                                        </div>
+                                                        <p class="card-text">
+                                                            <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'pending' %}bg-warning{% elif booking.status == 'completed' %}bg-info{% else %}bg-danger{% endif %}">
+                                                                {{ booking.get_status_display }}
+                                                            </span>
+                                                        </p>
+                                                        <div class="booking-price mb-2">
+                                                            <strong>Total:</strong> ${{ booking.total_price }}
+                                                        </div>
+                                                        <a href="{% url 'booking_confirmation' booking.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <!-- Active Bookings Tab -->
+                                <div class="tab-pane fade" id="active" role="tabpanel" aria-labelledby="active-tab">
+                                    {% for booking in bookings %}
+                                        {% if booking.status == 'confirmed' or booking.status == 'pending' %}
+                                            <div class="card booking-card mb-3">
+                                                <div class="row g-0">
+                                                    <div class="col-md-4">
+                                                        <img src="{{ booking.car.main_image_url }}" class="img-fluid rounded-start h-100" alt="{{ booking.car.make }} {{ booking.car.model }}" style="object-fit: cover;">
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">{{ booking.car.year }} {{ booking.car.make }} {{ booking.car.model }}</h5>
+                                                            <div class="booking-dates mb-2">
+                                                                <i class="fas fa-calendar-alt me-2"></i> {{ booking.start_date|date:"M d, Y" }} - {{ booking.end_date|date:"M d, Y" }}
+                                                            </div>
+                                                            <p class="card-text">
+                                                                <span class="badge {% if booking.status == 'confirmed' %}bg-success{% else %}bg-warning{% endif %}">
+                                                                    {{ booking.get_status_display }}
+                                                                </span>
+                                                            </p>
+                                                            <div class="booking-price mb-2">
+                                                                <strong>Total:</strong> ${{ booking.total_price }}
+                                                            </div>
+                                                            <a href="{% url 'booking_confirmation' booking.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                
+                                <!-- Completed Bookings Tab -->
+                                <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+                                    {% for booking in bookings %}
+                                        {% if booking.status == 'completed' %}
+                                            <div class="card booking-card mb-3">
+                                                <div class="row g-0">
+                                                    <div class="col-md-4">
+                                                        <img src="{{ booking.car.main_image_url }}" class="img-fluid rounded-start h-100" alt="{{ booking.car.make }} {{ booking.car.model }}" style="object-fit: cover;">
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">{{ booking.car.year }} {{ booking.car.make }} {{ booking.car.model }}</h5>
+                                                            <div class="booking-dates mb-2">
+                                                                <i class="fas fa-calendar-alt me-2"></i> {{ booking.start_date|date:"M d, Y" }} - {{ booking.end_date|date:"M d, Y" }}
+                                                            </div>
+                                                            <p class="card-text">
+                                                                <span class="badge bg-info">
+                                                                    {{ booking.get_status_display }}
+                                                                </span>
+                                                            </p>
+                                                            <div class="booking-price mb-2">
+                                                                <strong>Total:</strong> ${{ booking.total_price }}
+                                                            </div>
+                                                            <a href="{% url 'booking_confirmation' booking.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-car-side fa-4x text-muted mb-3"></i>
+                                <h4>No Bookings Yet</h4>
+                                <p class="text-muted">You haven't made any bookings yet. Start exploring our luxury fleet!</p>
+                                <a href="{% url 'car_list' %}" class="btn btn-primary mt-3">Browse Cars</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

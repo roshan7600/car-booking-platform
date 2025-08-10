@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}LuxoDrive - Luxury Car Rental Service{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Experience Luxury on Wheels</h1>
+        <p class="hero-subtitle">Drive the world's most prestigious vehicles with our premium rental service</p>
+        <a href="{% url 'car_list' %}" class="btn btn-primary btn-lg">Explore Our Fleet</a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-subtitle">Exceptional Experience</span>
+            <h2 class="section-title-modern">Why Choose LuxoDrive</h2>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-car-side"></i>
+                    </div>
+                    <h3>Premium Selection</h3>
+                    <p>Choose from our handpicked collection of the world's finest luxury vehicles.</p>
+                    <a href="{% url 'car_list' %}" class="feature-link">Explore Fleet <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Fully Insured</h3>
+                    <p>Drive with confidence knowing that all our vehicles come with comprehensive insurance.</p>
+                    <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <h3>Concierge Service</h3>
+                    <p>Enjoy personalized delivery and pickup services at your convenience.</p>
+                    <a href="#" class="feature-link">Our Services <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Cars -->
+<section class="featured-cars py-5 bg-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-subtitle">Luxury Collection</span>
+            <h2 class="section-title-modern">Featured Vehicles</h2>
+        </div>
+        
+        {% if featured_cars %}
+        <div class="row mt-5">
+            {% for car in featured_cars %}
+            <div class="col-md-4 mb-4">
+                <div class="car-card">
+                    <div class="car-card-image">
+                        <img src="{{ car.main_image_url }}" alt="{{ car.make }} {{ car.model }}">
+                        <div class="car-card-tag">Premium</div>
+                        <div class="car-card-overlay">
+                            <a href="{% url 'car_detail' car.id %}" class="btn-view-details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <h3 class="car-card-title">{{ car.year }} {{ car.make }} {{ car.model }}</h3>
+                            <div class="car-card-price">${{ car.price_per_day }}<span>/day</span></div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="car-spec">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>{{ car.horsepower }} HP</span>
+                            </div>
+                            <div class="car-spec">
+                                <i class="fas fa-cogs"></i>
+                                <span>{{ car.transmission }}</span>
+                            </div>
+                            <div class="car-spec">
+                                <i class="fas fa-users"></i>
+                                <span>{{ car.seats }} Seats</span>
+                            </div>
+                        </div>
+                        <div class="car-card-footer">
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-secondary">Details</a>
+                            <a href="{% url 'booking' car.id %}" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'car_list' %}" class="btn btn-lg btn-outline-primary explore-btn">
+                Explore Our Fleet <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        {% else %}
+        <p class="text-center">No cars currently available. Please check back soon.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works py-5">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-subtitle">Simple Process</span>
+            <h2 class="section-title-modern">How It Works</h2>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-3 text-center">
+                <div class="step-card">
+                    <div class="step-number">
+                        <span>01</span>
+                    </div>
+                    <div class="step-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h4>Choose Your Vehicle</h4>
+                    <p>Browse our extensive fleet and select your dream car.</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-card">
+                    <div class="step-number">
+                        <span>02</span>
+                    </div>
+                    <div class="step-icon">
+                        <i class="far fa-calendar-alt"></i>
+                    </div>
+                    <h4>Book Your Dates</h4>
+                    <p>Select your preferred rental period and complete the booking.</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-card">
+                    <div class="step-number">
+                        <span>03</span>
+                    </div>
+                    <div class="step-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h4>Confirm Details</h4>
+                    <p>Review and confirm your booking details.</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-card">
+                    <div class="step-number">
+                        <span>04</span>
+                    </div>
+                    <div class="step-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h4>Enjoy Your Ride</h4>
+                    <p>Pick up your vehicle and enjoy the luxury experience.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">What Our Clients Say</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="quote">"The service was impeccable! Driving the Lamborghini Aventador was a dream come true. Will definitely be renting again."</p>
+                    <div class="client-info">
+                        <div class="client-name">Michael Dawson</div>
+                        <div class="client-title">CEO, Tech Innovations</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="quote">"The rental process was seamless from start to finish. The Ferrari 488 was in pristine condition and handled like a dream."</p>
+                    <div class="client-info">
+                        <div class="client-name">Sophia Reynolds</div>
+                        <div class="client-title">Fashion Designer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="quote">"The concierge service was exceptional. They delivered the Bentley Continental right to my hotel and picked it up when I was done. Truly luxury service."</p>
+                    <div class="client-info">
+                        <div class="client-name">James Wilson</div>
+                        <div class="client-title">Executive Producer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="stats py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="stats-counter" data-count="50">0</h3>
+                    <p>Luxury Vehicles</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="stats-counter" data-count="2500">0</h3>
+                    <p>Happy Clients</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="stats-counter" data-count="15">0</h3>
+                    <p>Years of Experience</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="stats-counter" data-count="20">0</h3>
+                    <p>Cities Covered</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta py-5 bg-dark text-white text-center">
+    <div class="container">
+        <h2 class="mb-4">Ready to Experience Luxury?</h2>
+        <p class="lead mb-4">Join our exclusive clientele and indulge in the ultimate driving experience.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'car_list' %}" class="btn btn-primary btn-lg">Browse Our Fleet</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Sign Up Now</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

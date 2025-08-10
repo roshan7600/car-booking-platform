@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmation - LuxoDrive Luxury Cars{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card booking-confirmation">
+                <div class="card-header bg-success text-white text-center">
+                    <h2 class="mb-0"><i class="fas fa-check-circle me-2"></i> Booking Confirmed</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <p class="lead">Thank you for choosing LuxoDrive Luxury Car Rentals!</p>
+                        <p>Your booking has been confirmed. Please find your booking details below.</p>
+                    </div>
+
+                    <div class="booking-details">
+                        <h3 class="mb-4">Booking Information</h3>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Booking ID:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                #{{ booking.id }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Vehicle:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                {{ booking.car.year }} {{ booking.car.make }} {{ booking.car.model }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Pick-up Date:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                {{ booking.start_date|date:"F d, Y" }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Drop-off Date:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                {{ booking.end_date|date:"F d, Y" }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Duration:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                {{ booking.get_duration_days }} days
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Booking Date:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                {{ booking.booking_date|date:"F d, Y H:i" }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Status:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Total Price:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                ${{ booking.total_price }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="car-info mt-5">
+                        <h3 class="mb-4">Vehicle Information</h3>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="{{ booking.car.main_image_url }}" class="img-fluid rounded" alt="{{ booking.car.make }} {{ booking.car.model }}">
+                            </div>
+                            <div class="col-md-8">
+                                <h4>{{ booking.car.year }} {{ booking.car.make }} {{ booking.car.model }}</h4>
+                                <div class="car-specs mt-3">
+                                    <span class="badge bg-light text-dark me-2"><i class="fas fa-cogs me-1"></i> {{ booking.car.get_transmission_display }}</span>
+                                    <span class="badge bg-light text-dark me-2"><i class="fas fa-tachometer-alt me-1"></i> {{ booking.car.horsepower }} HP</span>
+                                    <span class="badge bg-light text-dark"><i class="fas fa-users me-1"></i> {{ booking.car.seats }} seats</span>
+                                </div>
+                                <p class="mt-3">{{ booking.car.description|truncatechars:200 }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="next-steps mt-5">
+                        <h3 class="mb-4">Next Steps</h3>
+                        <div class="alert alert-info">
+                            <p><strong>Pick-up Location:</strong> 123 Luxury Lane, Beverly Hills, CA 90210</p>
+                            <p><strong>Pick-up Time:</strong> 10:00 AM - 6:00 PM (Please bring your driver's license and credit card)</p>
+                            <p>Our concierge team will contact you 24 hours before your pick-up date to confirm all details.</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <a href="{% url 'profile' %}" class="btn btn-primary me-2">View All Bookings</a>
+                        <a href="{% url 'car_list' %}" class="btn btn-outline-primary">Browse More Cars</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

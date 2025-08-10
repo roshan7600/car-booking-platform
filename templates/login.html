@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - LuxoDrive Luxury Cars{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-form">
+        <h2 class="auth-title">Login to Your Account</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username</label>
+                <input type="text" name="username" id="id_username" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Password</label>
+                <input type="password" name="password" id="id_password" class="form-control" required>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+            
+            {% if form.errors %}
+                <div class="alert alert-danger mt-3">
+                    <p>Your username and password didn't match. Please try again.</p>
+                </div>
+            {% endif %}
+        </form>
+        
+        <div class="mt-4 text-center">
+            <p>Don't have an account? <a href="{% url 'register' %}">Register now</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

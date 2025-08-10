@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ car.year }} {{ car.make }} {{ car.model }} - LuxoDrive Luxury Cars{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="car-detail">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Main Image -->
+                <div class="car-main-image mb-4">
+                    <img src="{{ car.main_image_url }}" id="main-car-image" class="img-fluid w-100" alt="{{ car.make }} {{ car.model }}">
+                </div>
+                
+                <!-- Image Thumbnails Gallery -->
+                <div class="car-gallery mb-4">
+                    <div class="row">
+                        <div class="col-3">
+                            <img src="{{ car.main_image_url }}" class="img-fluid car-thumbnail active" alt="{{ car.make }} {{ car.model }}">
+                        </div>
+                        {% for image in car.images.all %}
+                            {% if not image.is_main %}
+                            <div class="col-3">
+                                <img src="{{ image.image_url }}" class="img-fluid car-thumbnail" alt="{{ car.make }} {{ car.model }}">
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Car Description -->
+                <div class="car-description mb-4">
+                    <h2 class="mb-3">Description</h2>
+                    <p>{{ car.description }}</p>
+                </div>
+                
+                <!-- Car Features -->
+                <div class="car-features mb-4">
+                    <h2 class="mb-3">Features</h2>
+                    <div class="row">
+                        {% for feature in car.features.all %}
+                        <div class="col-md-4 mb-2">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-success me-2"></i> {{ feature.name }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Car Info Card -->
+                <div class="card mb-4">
+                    <div class="card-header text-white" style="background-color: #d4af37;">
+
+                        <h2 class="card-title mb-0">{{ car.year }} {{ car.make }} {{ car.model }}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="price-tag mb-3">${{ car.price_per_day }} <small>/day</small></div>
+                        
+                        <div class="car-specs">
+                            <div class="spec-item">
+                                <div class="spec-icon"><i class="fas fa-cogs"></i></div>
+                                <div class="spec-detail">
+                                    <strong>Transmission:</strong> {{ car.get_transmission_display }}
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                <div class="spec-detail">
+                                    <strong>Horsepower:</strong> {{ car.horsepower }} HP
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon"><i class="fas fa-gauge-high"></i></div>
+                                <div class="spec-detail">
+                                    <strong>Top Speed:</strong> {{ car.top_speed }} km/h
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon"><i class="fas fa-stopwatch"></i></div>
+                                <div class="spec-detail">
+                                    <strong>0-100 km/h:</strong> {{ car.acceleration }} seconds
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon"><i class="fas fa-users"></i></div>
+                                <div class="spec-detail">
+                                    <strong>Seats:</strong> {{ car.seats }}
+                                </div>
+                            </div>
+                            
+                            <div class="spec-item">
+                                <div class="spec-icon"><i class="fas fa-engine"></i></div>
+                                <div class="spec-detail">
+                                    <strong>Engine:</strong> {{ car.engine }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-cta mt-4">
+                            <a href="{% url 'booking' car.id %}" 
+                            class="btn btn-gold btn-lg d-block">
+                            Book Now
+                         </a>
+                                                 </div>
+                    </div>
+                </div>
+                
+                <!-- Availability Note -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Availability</h5>
+                        {% if car.is_available %}
+                            <div class="alert alert-success mb-0">
+                                <i class="fas fa-check-circle me-2"></i> This car is currently available for booking
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger mb-0">
+                                <i class="fas fa-times-circle me-2"></i> This car is currently unavailable
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Need Help Card -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Need Help?</h5>
+                        <p>Our luxury concierge service is available 24/7 to assist you with any questions.</p>
+                        <div class="d-grid">
+                            <a href="tel:+15551234567" class="btn btn-outline-primary"><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Related Cars -->
+        {% if related_cars %}
+        <div class="related-cars mt-5">
+            <h2 class="mb-4">You Might Also Like</h2>
+            <div class="row">
+                {% for related_car in related_cars %}
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="{{ related_car.main_image_url }}" class="card-img-top" alt="{{ related_car.make }} {{ related_car.model }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ related_car.year }} {{ related_car.make }} {{ related_car.model }}</h5>
+                            <div class="price-tag">${{ related_car.price_per_day }} <small>/day</small></div>
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'car_detail' related_car.id %}" class="btn btn-outline-primary">View Details</a>
+                                <a href="{% url 'booking' related_car.id %}" class="btn btn-gold">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image gallery functionality
+        const thumbnails = document.querySelectorAll('.car-thumbnail');
+        const mainImage = document.getElementById('main-car-image');
+        
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                // Set main image src to the clicked thumbnail src
+                mainImage.src = this.src;
+                
+                // Remove active class from all thumbnails
+                thumbnails.forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Add active class to clicked thumbnail
+                this.classList.add('active');
+            });
+        });
+    });
+</script>
+{% endblock %}
